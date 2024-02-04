@@ -9,3 +9,11 @@ variable "vpc_cidr_block" {
 variable "environment" {
   description = "deployment environment"
 }
+
+variable "env_prefix" {
+  description = "environment prefix"
+}
+
+variable "avail_zone" {
+  description = "availability zone"
+}
