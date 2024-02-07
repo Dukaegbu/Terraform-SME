@@ -24,32 +24,40 @@ output "vpc_id" {
 
 resource "aws_internet_gateway" "myapp-igw" {
   vpc_id = aws_vpc.myapp-vpc.id
+  tags = {
+    Name = "${var.env_prefix}-rtb"
+  }
 }
 
 resource "aws_route_table" "myapp-route-table" {
   vpc_id = aws_vpc.myapp-vpc.id
-  # route{
-  #   cidr_block = "0.0.0.0/0"
-  #   gateway_id = aws_internet_gateway.myapp-igw.id
-  # }
-  route = [ {
-    carrier_gateway_id = "value"
+  route{
     cidr_block = "0.0.0.0/0"
-    core_network_arn = "value"
-    destination_prefix_list_id = "::/0"
-    egress_only_gateway_id = "value"
-    ipv6_cidr_block = "::/0"
-    gateway_id = "${aws_internet_gateway.myapp-igw.id}"
-    local_gateway_id = "value"
-    nat_gateway_id = "value"
-    network_interface_id = "value"
-    transit_gateway_id = "value"
-    vpc_endpoint_id = "value"
-    vpc_peering_connection_id = "value"
-  } ]
+    gateway_id = aws_internet_gateway.myapp-igw.id
+  }
+  # route = [ {
+  #   carrier_gateway_id = "value"
+  #   cidr_block = "0.0.0.0/0"
+  #   core_network_arn = "value"
+  #   destination_prefix_list_id = "::/0"
+  #   egress_only_gateway_id = "value"
+  #   ipv6_cidr_block = "::/0"
+  #   gateway_id = "${aws_internet_gateway.myapp-igw.id}"
+  #   local_gateway_id = "value"
+  #   nat_gateway_id = "value"
+  #   network_interface_id = "value"
+  #   transit_gateway_id = "value"
+  #   vpc_endpoint_id = "value"
+  #   vpc_peering_connection_id = "value"
+  # } ]
   tags = {
     Name = "${var.env_prefix}-igw"
   }
   
+}
+
+resource "aws_route_table_association" "name" {
+  subnet_id = aws_subnet.myapp-subnet-1.id
+  route_table_id = aws_route_table.myapp-route-table.id
 }
 

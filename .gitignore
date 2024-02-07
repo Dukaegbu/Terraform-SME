@@ -4,6 +4,7 @@
 #tf state files
 *.tfstate
 *.tfstate.*
+*.tfplan
 
 # #tf variable files may include 
 # *.tfvars
