@@ -17,3 +17,14 @@ variable "env_prefix" {
 variable "avail_zone" {
   description = "availability zone"
 }
+
+variable "my_ip" {
+  description = "my ip address"
+}
+
+variable "instance_type" {
+}
+
+variable "my_public_key" {
+  description = "my public key location path"
+}

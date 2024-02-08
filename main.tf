@@ -61,3 +61,76 @@ resource "aws_route_table_association" "name" {
   route_table_id = aws_route_table.myapp-route-table.id
 }
 
+resource "aws_security_group" "myapp-sg" {
+  name = "myapp-sg"
+  vpc_id = aws_vpc.myapp-vpc.id
+
+  ingress  {
+    from_port = 22
+    to_port = 22
+    protocol ="TCP"
+    cidr_blocks ="${var.my_ip}"
+    
+  }
+  ingress {
+    from_port = 8080
+    to_port = 8080
+    protocol ="TCP"
+    cidr_blocks = ["0.0.0.0/0"]
+  } 
+
+  egress {
+    cidr_blocks = ["0.0.0.0/0"]
+    from_port = 0
+    to_port = 0
+    protocol = "-1"
+    prefix_list_ids =[]
+  } 
+   tags = {
+    Name = "${var.env_prefix}-sg"
+  }
+
+}
+
+data "aws_ami" "latest-amazon-linux-image" {
+  most_recent = true
+  owners = ["amazon"]
+  filter {
+    name = "name"
+    values = ["al2023-ami-2023.3.20240131.0-kernel-6.1-x86_64"]
+  }
+  filter {
+    name = "virtualization-type"
+    values = [ "hvm" ]
+  }
+}
+
+resource "aws_key_pair" "ssh-key" {
+  public_key = file(var.my_public_key)
+  key_name = "server-key"
+}
+
+resource "aws_instance" "myapp-server" {
+  ami = data.aws_ami.latest-amazon-linux-image.id
+  instance_type = var.instance_type[0]
+  subnet_id = aws_subnet.myapp-subnet-1.id
+  vpc_security_group_ids = [aws_security_group.myapp-sg.id]
+  availability_zone = var.avail_zone
+
+  associate_public_ip_address = true
+  key_name = aws_key_pair.ssh-key.key_name
+
+  #user to execute commands in ec2
+  user_data = file("entry-script.sh")
+
+  #used for when you modify the user data field it will re provision the instance 
+  user_data_replace_on_change = true
+
+   tags = {
+    Name = "${var.env_prefix}-server"
+  }
+}
+
+output "aws_ami" {
+  value = data.aws_ami.latest-amazon-linux-image.id
+}
