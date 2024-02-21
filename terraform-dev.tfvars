@@ -7,3 +7,4 @@ avail_zone = "us-east-1a"
 my_ip = ["150.220.29.51/32"]
 instance_type = ["t2.micro","t2.nano"]
 my_public_key = "C:/Users/dukae/.ssh/id_rsa.pub"
+ami-image = "al2023-ami-2023.3.20240131.0-kernel-6.1-x86_64"
